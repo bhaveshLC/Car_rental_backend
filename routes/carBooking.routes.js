@@ -20,5 +20,6 @@ router
 router
   .get("/user/:status", handleGetBooking)
   .get("/admin", handleGetAdminBooking)
+  .get("/admin/:id", handleGetBookingDetails)
   .get("/:id", handleGetBookingDetails);
 module.exports = { bookingRoute: router };

@@ -3,6 +3,7 @@ const User = require("../models/user.model");
 require("dotenv").config();
 const authMiddleware = async (req, res, next) => {
   let token = "";
+  console.log(req.originalUrl);
 
   if (req.originalUrl.includes("admin")) {
     token =
