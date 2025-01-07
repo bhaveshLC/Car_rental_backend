@@ -4,6 +4,7 @@ const {
   handleGetSubscription,
   handleGetUser,
   handleUpdateUser,
+  handleRegisterAdmin,
 } = require("../controllers/user.controller");
 const {
   handleLogin,
@@ -15,6 +16,7 @@ router.get("/:id", handleGetUser);
 router.patch("/admin", authMiddleware, handleUpdateUser);
 router.patch("", authMiddleware, handleUpdateUser);
 router.post("", handleRegisterUser);
+router.post("/admin", handleRegisterAdmin);
 router.post("/user/login", handleLogin);
 router.post("/login", handleAdminLogin);
 router.post("/subscribe", authMiddleware, handleGetSubscription);

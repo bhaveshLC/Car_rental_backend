@@ -28,7 +28,6 @@ async function handleCreateCar(req, res) {
   if (!carNumber && !regex.test(carNumber)) {
     return res.status(400).json({ message: "Enter valid car number" });
   }
-  console.log(req.file);
 
   const localFilePath = req.file.path;
 

@@ -80,7 +80,6 @@ async function handleGetBooking(req, res) {
   }
 
   try {
-    // Fetch bookings based on the user and booking status
     const bookings = await CarBooking.find({
       user: user._id,
       bookingStatus: { $in: statusesToQuery },
@@ -164,20 +163,24 @@ async function handlePayment(req, res) {
       .status(400)
       .json({ message: "Expiry date must be in the future" });
   }
-  const booking = await CarBooking.findOne({ _id: id });
-  if (!booking) {
-    return res.status(404).json({ message: "Booking not found..." });
+  try {
+    const booking = await CarBooking.findOne({ _id: id });
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found..." });
+    }
+    booking.paymentStatus = "paid";
+    await booking.save();
+    const transaction = await Transaction.create({
+      totalAmount,
+      booking: id,
+      cardHolderName: name,
+      cardNumber,
+      cvv,
+    });
+    return res.status(200).json(booking);
+  } catch (error) {
+    console.log(error);
   }
-  booking.paymentStatus = "paid";
-  await booking.save();
-  const transaction = await Transaction.create({
-    totalAmount,
-    booking: id,
-    cardHolderName: name,
-    cardNumber,
-    cvv,
-  });
-  return res.status(200).json(booking);
 }
 async function handleCancelBooking(req, res) {
   const { id } = req.params;
@@ -213,22 +216,26 @@ async function handleConfirmBooking(req, res) {
 async function handleCouponCode(req, res) {
   const user = req.user;
   let { totalPrice, couponCode } = req.body;
-  if (user.totalBookings != 0 && couponCode.toLowerCase() == "first5") {
-    return res.status(400).json({ message: "Coupon Already used" });
-  }
-  if (couponCode.toLowerCase() == "first5" && user.totalBookings == 0) {
-    totalPrice -= (totalPrice * 5) / 100;
-    return res.json({ totalPrice, discount: 5 });
-  }
-  if (
-    user.subscriptionType == "premium" &&
-    couponCode?.toLowerCase() == "random"
-  ) {
-    let random = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
-    totalPrice -= (totalPrice * random) / 100;
-    return res.json({ totalPrice, discount: random });
-  } else {
-    return res.status(400).json({ message: "Invalid coupon code" });
+  try {
+    if (user.totalBookings != 0 && couponCode.toLowerCase() == "first5") {
+      return res.status(400).json({ message: "Coupon Already used" });
+    }
+    if (couponCode.toLowerCase() == "first5" && user.totalBookings == 0) {
+      totalPrice -= (totalPrice * 5) / 100;
+      return res.json({ totalPrice, discount: 5 });
+    }
+    if (
+      user.subscriptionType == "premium" &&
+      couponCode?.toLowerCase() == "random"
+    ) {
+      let random = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
+      totalPrice -= (totalPrice * random) / 100;
+      return res.json({ totalPrice, discount: random });
+    } else {
+      return res.status(400).json({ message: "Invalid coupon code" });
+    }
+  } catch (error) {
+    console.log(error);
   }
 }
 module.exports = {
