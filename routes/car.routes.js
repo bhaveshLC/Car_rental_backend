@@ -8,6 +8,8 @@ const {
   handleGetAdminCars,
 } = require("../controllers/car.controller");
 const multer = require("multer");
+const { authMiddleware } = require("../middleware/auth.middleware");
+const { adminAuthMiddleware } = require("../middleware/adminAuth.middleware");
 const router = express.Router();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -19,10 +21,10 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 router
-  .post("", upload.single("carImage"), handleCreateCar)
-  .get("", handleGetAllCars)
-  .get("/admin", handleGetAdminCars)
+  .post("", authMiddleware, upload.single("carImage"), handleCreateCar)
+  .get("", authMiddleware, handleGetAllCars)
+  .get("/admin", adminAuthMiddleware, handleGetAdminCars)
   .get("/:carId", handleGetCarDetails)
-  .patch("/:id", handleUpdateCar)
-  .delete("/:id", handleDeleteCar);
+  .patch("/:id", adminAuthMiddleware, handleUpdateCar)
+  .delete("/:id", adminAuthMiddleware, handleDeleteCar);
 module.exports = { carRoute: router };

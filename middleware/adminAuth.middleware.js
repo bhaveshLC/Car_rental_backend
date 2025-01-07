@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
-require("dotenv").config();
-const authMiddleware = async (req, res, next) => {
-  const token = req.headers["authorization"].split(" ")[1];
+const adminAuthMiddleware = async (req, res, next) => {
+  const token = req.headers["admin-authorization"].split(" ")[1];
+  console.log(token);
 
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
@@ -17,6 +17,9 @@ const authMiddleware = async (req, res, next) => {
         .status(401)
         .json({ message: "User not found, please authenticate." });
     }
+    if (user.role != "admin") {
+      return res.status(401).json({ message: "Unauthorized user" });
+    }
     req.user = user;
     next();
   } catch (error) {
@@ -24,4 +27,4 @@ const authMiddleware = async (req, res, next) => {
     return res.status(500).json({ message: "Internal Server Error." });
   }
 };
-module.exports = { authMiddleware };
+module.exports = { adminAuthMiddleware };
