@@ -4,7 +4,7 @@ const secret_key = process.env.SECRET_KEY;
 async function handleLogin(req, res) {
   const { username, password } = req.body;
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username, role: "user" });
     if (!user) {
       return res.status(404).json({ message: "User does not exists..." });
     }
@@ -40,7 +40,7 @@ async function handleLogin(req, res) {
 async function handleAdminLogin(req, res) {
   const { username, password } = req.body;
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username, role: "admin" });
     if (!user) {
       return res.status(404).json({ message: "User does not exists..." });
     }
