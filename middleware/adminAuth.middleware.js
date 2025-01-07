@@ -11,7 +11,9 @@ const adminAuthMiddleware = async (req, res, next) => {
         .status(401)
         .json({ message: "Invalid token. Please authenticate." });
     }
-    const user = await User.findById(decoded._id).select("-password");
+    const user = await User.findOne({_id:decoded._id, role:'admin'}).select("-password");
+    console.log(user);
+    
     if (!user) {
       return res
         .status(401)

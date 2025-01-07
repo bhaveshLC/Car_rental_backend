@@ -9,19 +9,21 @@ const {
   handleConfirmBooking,
   handleCouponCode,
 } = require("../controllers/carBooking.controller");
+const { authMiddleware } = require("../middleware/auth.middleware");
+const { adminAuthMiddleware } = require("../middleware/adminAuth.middleware");
 const router = express.Router();
 
 router
-  .post("/coupon", handleCouponCode)
-  .post("/:carId", handleBooking)
-  .patch("/:id", handlePayment)
-  .patch("/cancel/:id", handleCancelBooking)
-  .patch("/admin/cancel/:id", handleCancelBooking)
-  .patch("/admin/confirm/:id", handleConfirmBooking)
+  .post("/coupon",authMiddleware, handleCouponCode)
+  .post("/:carId",authMiddleware, handleBooking)
+  .patch("/:id",authMiddleware, handlePayment)
+  .patch("/cancel/:id",authMiddleware, handleCancelBooking)
+  .patch("/admin/cancel/:id",adminAuthMiddleware, handleCancelBooking)
+  .patch("/admin/confirm/:id",adminAuthMiddleware, handleConfirmBooking)
   .patch("/confirm/:id", handleConfirmBooking);
 router
-  .get("/user/:status", handleGetBooking)
-  .get("/admin", handleGetAdminBooking)
-  .get("/admin/:id", handleGetBookingDetails)
-  .get("/:id", handleGetBookingDetails);
+  .get("/user/:status",authMiddleware, handleGetBooking)
+  .get("/admin",adminAuthMiddleware, handleGetAdminBooking)
+  .get("/admin/:id",adminAuthMiddleware, handleGetBookingDetails)
+  .get("/:id",authMiddleware, handleGetBookingDetails);
 module.exports = { bookingRoute: router };

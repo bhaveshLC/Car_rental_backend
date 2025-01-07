@@ -16,6 +16,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/auth", userRoute);
 app.use("/car", carRoute);
-app.use("/booking", authMiddleware, bookingRoute);
-app.use("/transaction", authMiddleware, transactionRoute);
+app.use("/booking", bookingRoute);
+app.use("/transaction", transactionRoute);
 app.listen(port, () => console.log(`listening on http://localhost:${port}`));
