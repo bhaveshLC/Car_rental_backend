@@ -12,11 +12,11 @@ const {
 } = require("../controllers/auth.controller");
 const { authMiddleware } = require("../middleware/auth.middleware");
 const router = express.Router();
+router.post("/admin", handleRegisterAdmin);
 router.get("/:id", handleGetUser);
 router.patch("/admin", authMiddleware, handleUpdateUser);
 router.patch("", authMiddleware, handleUpdateUser);
 router.post("", handleRegisterUser);
-router.post("/admin", handleRegisterAdmin);
 router.post("/user/login", handleLogin);
 router.post("/login", handleAdminLogin);
 router.post("/subscribe", authMiddleware, handleGetSubscription);

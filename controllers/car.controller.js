@@ -28,7 +28,12 @@ async function handleCreateCar(req, res) {
   if (!carNumber && !regex.test(carNumber)) {
     return res.status(400).json({ message: "Enter valid car number" });
   }
-
+  const existingCar = await Car.findOne({ carNumber });
+  if (existingCar) {
+    return res
+      .status(400)
+      .json({ message: "Car with that number is already present" });
+  }
   const localFilePath = req.file.path;
 
   let result;
