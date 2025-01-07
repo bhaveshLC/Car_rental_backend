@@ -109,39 +109,43 @@ async function handleGetBooking(req, res) {
 }
 async function handleGetAdminBooking(req, res) {
   const user = req.user;
-  const results = await CarBooking.find({
-    carOwner: user._id,
-  }).populate("car");
-  let totalEarning = 0;
-  let totalSeats = 0;
-  let pendingRides = 0;
-  let cancelledRides = 0;
-  results.forEach((booking) => {
-    if (booking.bookingStatus != "cancelled") {
-      totalEarning += booking.totalPrice || 0;
+  try {
+    const results = await CarBooking.find({
+      carOwner: user._id,
+    }).populate("car");
+    let totalEarning = 0;
+    let totalSeats = 0;
+    let pendingRides = 0;
+    let cancelledRides = 0;
+    results.forEach((booking) => {
+      if (booking.bookingStatus != "cancelled") {
+        totalEarning += booking.totalPrice || 0;
+      }
+      totalSeats += booking.car.seats || 0;
+      if (
+        booking.bookingStatus == "confirmed" ||
+        booking.bookingStatus == "pending"
+      ) {
+        pendingRides++;
+      }
+      if (booking.bookingStatus == "cancelled") {
+        cancelledRides++;
+      }
+    });
+    let cancellationRate = 0;
+    if (cancelledRides > 0) {
+      cancellationRate = ((cancelledRides / results.length) * 100).toFixed(2);
     }
-    totalSeats += booking.car.seats || 0;
-    if (
-      booking.bookingStatus == "confirmed" ||
-      booking.bookingStatus == "pending"
-    ) {
-      pendingRides++;
-    }
-    if (booking.bookingStatus == "cancelled") {
-      cancelledRides++;
-    }
-  });
-  let cancellationRate = 0;
-  if (cancelledRides > 0) {
-    cancellationRate = ((cancelledRides / results.length) * 100).toFixed(2);
+    return res.json({
+      results,
+      totalEarning,
+      totalSeats,
+      pendingRides,
+      cancellationRate,
+    });
+  } catch (error) {
+    console.log(error);
   }
-  return res.json({
-    results,
-    totalEarning,
-    totalSeats,
-    pendingRides,
-    cancellationRate,
-  });
 }
 async function handleGetBookingDetails(req, res) {
   const { id } = req.params;
