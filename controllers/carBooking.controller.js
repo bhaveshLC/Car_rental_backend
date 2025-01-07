@@ -131,7 +131,10 @@ async function handleGetAdminBooking(req, res) {
       cancelledRides++;
     }
   });
-  const cancellationRate = ((cancelledRides / results.length) * 100).toFixed(2);
+  let cancellationRate = 0;
+  if (cancelledRides > 0) {
+    cancellationRate = ((cancelledRides / results.length) * 100).toFixed(2);
+  }
   return res.json({
     results,
     totalEarning,
