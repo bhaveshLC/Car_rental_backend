@@ -16,6 +16,7 @@ router
   .post("/:carId", handleBooking)
   .patch("/:id", handlePayment)
   .patch("/cancel/:id", handleCancelBooking)
+  .patch("/admin/cancel/:id", handleCancelBooking)
   .patch("/confirm/:id", handleConfirmBooking);
 router
   .get("/user/:status", handleGetBooking)
