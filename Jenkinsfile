@@ -1,28 +1,23 @@
 pipeline {
     agent any
     tools {
-      nodejs '20.17.0'
+        nodejs '20.17.0'  // Ensures Node.js version 20.17.0 is used
     }
     stages {
         stage('print versions') {
-          steps {
-            sh 'npm version'
-          }
-        }
-        stage('Install') { 
             steps {
-              sh 'npm install'
+                sh 'npm version'  // Print npm version
             }
         }
-        stage('Build') { 
+        stage('Install') {
             steps {
-                sh 'npm run build' 
+                sh 'npm install'  // Install npm dependencies
             }
         }
-        stage('codedeploy'){
-          steps {
-            step([$class: 'AWSCodeDeployPublisher', applicationName: 'nodejs-application', deploymentGroupAppspec: false, deploymentGroupName: 'nodejs-application-DG', excludes: '', iamRoleArn: '', includes: 'dist/', proxyHost: '', proxyPort: 0, region: 'ap-south-1', s3bucket: 'deploymasters-nodejs', s3prefix: '', subdirectory: '', versionFileName: '', waitForCompletion: false])
-           }
+        stage('Build') {
+            steps {
+                sh 'npm run build'  // Run build command
+            }
         }
     }
 }
