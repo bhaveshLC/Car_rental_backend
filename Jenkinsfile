@@ -1,22 +1,28 @@
 pipeline {
     agent any
     tools {
-        nodejs '20.7.0'  // Ensures Node.js version 20.17.0 is used
+        nodejs '20.7.0'  // Ensure Node.js version 20.17.0 is used
     }
     stages {
-        stage('print versions') {
+        stage('Checkout SCM') {
             steps {
-                sh 'npm version'  // Print npm version
+                checkout scm  // Check out the source code from the Git repository
+            }
+        }
+        stage('Print Versions') {
+            steps {
+                sh 'npm version'  // Print the npm version and other relevant details
             }
         }
         stage('Install') {
             steps {
-                sh 'npm install'  // Install npm dependencies
+                // Force install dependencies even with conflicts
+                sh 'npm install --force'
             }
         }
         stage('Build') {
             steps {
-                sh 'npm run build'  // Run build command
+                sh 'npm run build'  // Run the build command
             }
         }
     }
