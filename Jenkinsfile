@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        nodejs '20.17.0'  // Ensures Node.js version 20.17.0 is used
+        nodejs '20.7.0'  // Ensures Node.js version 20.17.0 is used
     }
     stages {
         stage('print versions') {
